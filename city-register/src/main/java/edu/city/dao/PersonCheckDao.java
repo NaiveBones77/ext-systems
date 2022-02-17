@@ -8,6 +8,8 @@ import java.sql.*;
 
 public class PersonCheckDao {
 
+    private ConnectionBuilder connectionBuilder;
+
     private static final String SQL_REQUEST = "select temporal, upper(p.sur_name), upper('Васильев') from cr_adress_person ap " +
             "inner join cr_person p on p.person_id = ap.person_id " +
             "inner join cr_adress a on a.adress_id = ap.adress_id " +
@@ -21,14 +23,12 @@ public class PersonCheckDao {
             "and a.street_code = ? " +
             "and upper(a.building) = upper(?) ";
 
-    public PersonCheckDao()
-    {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+    public void setConnectionBuilder(ConnectionBuilder connectionBuilder) {
+        this.connectionBuilder = connectionBuilder;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return connectionBuilder.getConnection();
     }
 
     public PersonResponse checkPerson(PersonRequest request) throws PersonCheckException
@@ -89,8 +89,5 @@ public class PersonCheckDao {
         return sql;
     }
 
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5433/city_register",
-                "postgres", "admin");
-    }
+
 }
